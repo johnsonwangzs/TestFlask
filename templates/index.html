@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+    <p>This is the index page.</p>
+    {% if current_user.is_authenticated %}
+      Hi, {{ current_user.name }}!
+    {% endif %}
+    <button> <a href="{{ url_for('logout') }}">Logout</a></button>
+</body>
+</html>
+

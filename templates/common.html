@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %} Title {% endblock %}</title>
+</head>
+<body>
+    {% block header %}
+        <div>header</div>
+    {% endblock %}
+    {% block container %}
+        <div>content</div>
+    {% endblock %}
+    {% block footer %}
+        <div class="footer">
+            made by WZS
+        </div>
+    {% endblock %}
+</body>
+</html>

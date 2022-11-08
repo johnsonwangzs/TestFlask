@@ -1,15 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>login</title>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/hello.js') }}"></script>
 </head>
 <body>
+    {% block container %}
     <p>Login</p>
     <form method="post">
-        <input type="text" name="userid">
+        <input type="text" name="username">
         <input type="password" name="password">
-        <input type="submit" value="Login">
+        <input type="submit" onclick="test_sign_in()" value="Login">
     </form>
+    {% endblock %}
 </body>
 </html>

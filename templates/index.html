@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% extends 'common.html' %}
     <meta charset="UTF-8">
-    <title>index</title>
+    <title>{% block title %}index{% endblock %}</title>
 </head>
 <body>
+    {% block container %}
     <p>This is the index page.</p>
     {% if current_user.is_authenticated %}
-      Hi, {{ current_user.name }}!
+      Hi, {{ current_user.get_id() }}!
     {% endif %}
-    <button> <a href="{{ url_for('logout') }}">Logout</a></button>
+
+    <button> <a href="{{ url_for('user.logout') }}">Logout</a></button>
+    {% endblock %}}
 </body>
 </html>
 

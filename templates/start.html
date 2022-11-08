@@ -5,7 +5,7 @@
     <title>Start Page</title>
 </head>
 <body>
-    <p>Welcome to the start page!</p>
-    <button> <a href="{{ url_for('login') }}">Login</a></button>
+    <p>Welcome to the start page, {{user_id}}</p>
+    <button> <a href="{{ url_for('user.login') }}">Login</a></button>
 </body>
 </html>

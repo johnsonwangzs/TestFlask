@@ -2,10 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Start Page</title>
+    <title>{% block title %}起始页{% endblock %}</title>
 </head>
 <body>
+    {% block container %}
     <p>Welcome to the start page, {{user_id}}</p>
     <button> <a href="{{ url_for('user.login') }}">Login</a></button>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+           {% for message in messages %}
+                <p>{{ message }}</p>
+           {% endfor %}
+        {% endif %}
+    {% endwith %}
+    {% endblock %}
 </body>
 </html>

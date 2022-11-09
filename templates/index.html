@@ -3,16 +3,23 @@
 <head>
     {% extends 'common.html' %}
     <meta charset="UTF-8">
-    <title>{% block title %}index{% endblock %}</title>
+    <title>{% block title %}索引页{% endblock %}</title>
 </head>
 <body>
     {% block container %}
     <p>This is the index page.</p>
     {% if current_user.is_authenticated %}
-      Hi, {{ current_user.get_id() }}!
+        Hi, {{ current_user.get_id() }}!
     {% endif %}
 
     <button> <a href="{{ url_for('user.logout') }}">Logout</a></button>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+           {% for message in messages %}
+                <p>{{ message }}</p>
+           {% endfor %}
+        {% endif %}
+    {% endwith %}
     {% endblock %}}
 </body>
 </html>

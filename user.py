@@ -4,7 +4,7 @@
 # @file    : user.py.py
 # @function: user蓝图
 
-from flask import Blueprint,  render_template, url_for, redirect, request
+from flask import Blueprint, render_template, url_for, redirect, request, flash
 from flask_login import login_required, login_user, logout_user, UserMixin, LoginManager
 import logging
 import dbutils
@@ -48,7 +48,7 @@ def query_user(attr_key: str, attr_value: str):
     elif attr_key == 'username':
         condition = f'username="{attr_value}"'
         table = 'user_info'
-    if condition != '':
+    if condition != '' and table != '':
         data = {
             'condition': condition
         }
@@ -84,15 +84,18 @@ def login():
         query_res = query_user('username', username)
         if query_res is None:  # 用户不存在
             logging.warning('不存在的用户名 %s 尝试登录', username)
+            flash('用户不存在！')
             return redirect(url_for('user.login'))
         user_id = query_res[0][0]
         cur_user = query_user('user_id', user_id)
         if request.form.get('password') == cur_user[0][1]:  # 认证通过
             login_user(load_user(user_id))
             logging.info('用户ID %s 成功登录', user_id)
+            flash('登陆成功！')
             return redirect(url_for('index'))
         else:  # 口令错误
             logging.warning('用户ID %s 尝试登陆时输入了错误的口令', user_id)
+            flash('口令错误！')
         return redirect(url_for('user.login'))
     elif request.method == 'GET':
         return render_template('login.html')
@@ -102,6 +105,7 @@ def login():
 @login_required
 def logout():
     logout_user()
+    flash('您已登出。')
     return redirect(url_for('start'))
 
 
@@ -110,6 +114,7 @@ def reauthenticate():
     fresh login重认证
     :return:
     """
+    flash('需要重新登陆！')
     return redirect(url_for('user.login'))
 
 

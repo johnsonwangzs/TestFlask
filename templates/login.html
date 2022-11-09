@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
-    <title>login</title>
+    <title>{% block title %}登录页{% endblock %}</title>
     <script type="text/javascript" src="{{ url_for('static', filename='js/hello.js') }}"></script>
 </head>
 <body>
@@ -13,6 +13,13 @@
         <input type="password" name="password">
         <input type="submit" onclick="test_sign_in()" value="Login">
     </form>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+           {% for message in messages %}
+                <p>{{ message }}</p>
+           {% endfor %}
+        {% endif %}
+    {% endwith %}
     {% endblock %}
 </body>
 </html>

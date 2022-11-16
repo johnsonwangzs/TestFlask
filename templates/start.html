@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% extends 'common.html' %}
     <meta charset="UTF-8">
     <title>{% block title %}起始页{% endblock %}</title>
 </head>
 <body>
     {% block container %}
     <p>Welcome to the start page, {{user_id}}</p>
-    <button> <a href="{{ url_for('user.login') }}">Login</a></button>
+    <button> <a href="{{ url_for('user.login') }}">登录</a></button>
+    <button> <a href="{{ url_for('user.register') }}">注册</a></button>
     {% with messages = get_flashed_messages() %}
         {% if messages %}
            {% for message in messages %}

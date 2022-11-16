@@ -50,8 +50,10 @@ class MysqlUtil:
         self._connect()
         cursor = self._conn.cursor()
         if op == 'query':  # 查询操作
+            columns = data.get('columns')
             condition = data.get('condition')
-            sql = 'SELECT * FROM {table} WHERE {query_condition}'.format(table=table, query_condition=condition)
+            sql = 'SELECT {columns} FROM {table} WHERE {query_condition}'.format(columns=columns, table=table,
+                                                                                 query_condition=condition)
             try:
                 cursor.execute(sql)
                 logging.info('执行查询成功：%s', sql)
@@ -65,11 +67,11 @@ class MysqlUtil:
             sql = 'INSERT INTO {table}({keys}) VALUES ({values})'.format(table=table, keys=keys, values=values)
             try:
                 if cursor.execute(sql, tuple(data.values())):
-                    logging.info('数据插入成功：%s', sql)
+                    logging.info('数据插入成功：%s', sql % tuple(data.values()))
                     self._conn.commit()
                     return True
             except:
-                logging.error('数据插入失败：%s', sql)
+                logging.error('数据插入失败：%s', sql % tuple(data.values()))
                 return False
         self._close()
 

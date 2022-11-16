@@ -8,6 +8,8 @@ from flask import Blueprint, render_template, url_for, redirect, request, flash
 from flask_login import login_required, login_user, logout_user, UserMixin, LoginManager
 import logging
 import dbutils
+from forms import RegisterForm
+from datetime import datetime
 
 user = Blueprint('user', __name__)
 
@@ -50,6 +52,7 @@ def query_user(attr_key: str, attr_value: str):
         table = 'user_info'
     if condition != '' and table != '':
         data = {
+            'columns': '*',
             'condition': condition
         }
         res = mysqldb.exec_sql(op='query', table=table, data=data)
@@ -118,10 +121,80 @@ def reauthenticate():
     return redirect(url_for('user.login'))
 
 
+def return_err_message(template, form):
+    logging.warning(form.errors)
+    err_message = list(form.errors.values())[0][0]
+    logging.warning(err_message)
+    content = {
+        'err_message': err_message
+    }
+    return render_template(template, **content)
+
+
+def gen_user_id():
+    """
+    为新注册用户生成ID
+    格式：'yymmddxx'
+    :return: 唯一的user_id
+    """
+    dt = datetime.now()
+    cur_date = dt.strftime('%Y%m%d')[2:]
+    # 从数据库中获取最大的user_id
+    data = {
+        'columns': 'max(user_id)',
+        'condition': 'user_id is not null'
+    }
+    res = mysqldb.exec_sql(op='query', table='user_account', data=data)
+    max_user_id = res[0][0]
+    if max_user_id[6:8] == '99':
+        return None
+    # 如果user_id是当天产生的，则新的user_id在此之上+1
+    if max_user_id[4:6] == cur_date[4:6]:
+        # new_user_id = cur_date + str(int(max_user_id[6:8]) + 1)
+        new_user_id = cur_date + '%02d' % (int(max_user_id[6:8]) + 1)
+        return new_user_id
+    # 如果user_id不是当天产生的，则生成当天的第一个user_id
+    new_user_id = cur_date + '00'
+    return new_user_id
+
+
 @user.route('/user/register/', methods=['GET', 'POST'])
 def register():
     """
     新用户注册
     :return:
     """
-    pass
+    if request.method == 'GET':
+        return render_template('register.html')
+    else:
+        form = RegisterForm(request.form)
+        if form.validate():
+            logging.info('收到用户提交的注册信息：%s', form.data)
+            user_id = gen_user_id()
+            if user_id is None:
+                flash('抱歉，今日新注册用户已达上限！请明日再来。')
+                return redirect(url_for('start'))
+            logging.info('为用户生成ID：%s', user_id)
+            # 新用户写入数据库
+            data_account = {
+                'user_id': user_id,
+                'password': form.data.get('password'),
+            }
+            res1 = mysqldb.exec_sql(op='insert', table='user_account', data=data_account)
+            data_info = {
+                'user_id': user_id,
+                'username': form.data.get('username'),
+                'phone': form.data.get('phone'),
+                'email': form.data.get('email')
+            }
+            res2 = mysqldb.exec_sql(op='insert', table='user_info', data=data_info)
+            if res1 is True and res2 is True:
+                flash('注册成功，请登录。')
+                logging.info('新用户注册成功，已写入数据库。')
+                return redirect(url_for('user.login'))
+            else:
+                flash('注册失败，请重试！')
+                logging.error('新用户注册失败！')
+            return redirect(url_for('start'))
+        else:
+            return return_err_message('register.html', form)

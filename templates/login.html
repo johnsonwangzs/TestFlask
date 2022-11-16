@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/html">
+<html lang="en">
 <head>
+    {% extends 'common.html' %}
     <meta charset="UTF-8">
     <title>{% block title %}登录页{% endblock %}</title>
     <script type="text/javascript" src="{{ url_for('static', filename='js/hello.js') }}"></script>
